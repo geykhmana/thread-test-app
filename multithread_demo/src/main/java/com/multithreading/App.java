@@ -1,6 +1,8 @@
 package com.multithreading;
 
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.swing.*;
 
 public class App extends JFrame {
@@ -57,15 +59,26 @@ public class App extends JFrame {
         startButton.setPreferredSize(new Dimension(100, 35));
 
         startButton.addActionListener(e -> {
-            CounterThread thread1 = new CounterThread(progressBars[0], threadLabels[0], 0, 25);
-            CounterThread thread2 = new CounterThread(progressBars[1], threadLabels[1], 0, 50);
-            CounterThread thread3 = new CounterThread(progressBars[2], threadLabels[2], 0, 100);
-            CounterThread thread4 = new CounterThread(progressBars[3], threadLabels[3], 0, 250);
+            AtomicInteger grandTotalCounter = new AtomicInteger();
+            Object grandTotalSync = new Object();
+            grandTotalLabel.setText("0");
+
+            CounterThread thread1 = new CounterThread(progressBars[0], threadLabels[0], grandTotalLabel, 25,
+                    grandTotalSync, grandTotalCounter);
+            CounterThread thread2 = new CounterThread(progressBars[1], threadLabels[1], grandTotalLabel, 50,
+                    grandTotalSync, grandTotalCounter);
+            CounterThread thread3 = new CounterThread(progressBars[2], threadLabels[2], grandTotalLabel, 100,
+                    grandTotalSync, grandTotalCounter);
+            CounterThread thread4 = new CounterThread(progressBars[3], threadLabels[3], grandTotalLabel, 150,
+                    grandTotalSync, grandTotalCounter);
 
             thread1.start();
             thread2.start();
             thread3.start();
             thread4.start();
+
+            CounterThread.startGrandTotalUpdater(grandTotalLabel, grandTotalSync, grandTotalCounter, thread1, thread2,
+                    thread3, thread4);
 
             startButton.setEnabled(false);
         });
