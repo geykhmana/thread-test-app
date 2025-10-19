@@ -59,7 +59,7 @@ public class App extends JFrame {
         startButton.setPreferredSize(new Dimension(100, 35));
 
         startButton.addActionListener(e -> {
-            AtomicInteger grandTotalCounter = new AtomicInteger();
+            AtomicInteger grandTotalCounter = new AtomicInteger(0);
             Object grandTotalSync = new Object();
             grandTotalLabel.setText("0");
 
@@ -77,8 +77,8 @@ public class App extends JFrame {
             thread3.start();
             thread4.start();
 
-            CounterThread.startGrandTotalUpdater(grandTotalLabel, grandTotalSync, grandTotalCounter, thread1, thread2,
-                    thread3, thread4);
+            CounterThread.startGrandTotalUpdater(grandTotalLabel, grandTotalSync, grandTotalCounter,
+                    () -> startButton.setEnabled(true), thread1, thread2, thread3, thread4);
 
             startButton.setEnabled(false);
         });

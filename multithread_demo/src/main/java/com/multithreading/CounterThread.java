@@ -23,7 +23,7 @@ public class CounterThread extends Thread {
     }
 
     public static Thread startGrandTotalUpdater(JLabel grandTotalLabel,
-            Object grandTotalSync, AtomicInteger grandTotalCounter, CounterThread... threads) {
+            Object grandTotalSync, AtomicInteger grandTotalCounter, Runnable onComplete, CounterThread... threads) {
         Thread updater = new Thread(() -> {
             boolean allFinished = false;
             while (!allFinished) {
@@ -50,6 +50,9 @@ public class CounterThread extends Thread {
 
             SwingUtilities.invokeLater(() -> {
                 grandTotalLabel.setText(String.valueOf(grandTotalCounter.get()));
+                if (onComplete != null) {
+                    onComplete.run();
+                }
             });
         });
 
