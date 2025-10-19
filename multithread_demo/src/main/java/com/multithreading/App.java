@@ -55,6 +55,21 @@ public class App extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         startButton = new JButton("Start");
         startButton.setPreferredSize(new Dimension(100, 35));
+
+        startButton.addActionListener(e -> {
+            CounterThread thread1 = new CounterThread(progressBars[0], threadLabels[0], 0, 25);
+            CounterThread thread2 = new CounterThread(progressBars[1], threadLabels[1], 0, 50);
+            CounterThread thread3 = new CounterThread(progressBars[2], threadLabels[2], 0, 100);
+            CounterThread thread4 = new CounterThread(progressBars[3], threadLabels[3], 0, 250);
+
+            thread1.start();
+            thread2.start();
+            thread3.start();
+            thread4.start();
+
+            startButton.setEnabled(false);
+        });
+
         buttonPanel.add(startButton);
 
         bottomPanel.add(buttonPanel, BorderLayout.WEST);
