@@ -10,6 +10,9 @@ public class App extends JFrame {
     private JLabel[] threadLabels;
     private JLabel grandTotalLabel;
     private JButton startButton;
+    private JButton pauseButton;
+    private JButton resumeButton;
+    private CounterThread[] threads = new CounterThread[4];
 
     public App() {
         setTitle("Thread Test Application");
@@ -54,40 +57,62 @@ public class App extends JFrame {
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 40, 0));
         startButton = new JButton("Start");
         startButton.setPreferredSize(new Dimension(100, 35));
+        pauseButton = new JButton("Pause");
+        pauseButton.setPreferredSize(new Dimension(100, 35));
+        resumeButton = new JButton("Resume");
+        resumeButton.setPreferredSize(new Dimension(100, 35));
 
         startButton.addActionListener(e -> {
             AtomicInteger grandTotalCounter = new AtomicInteger(0);
             Object grandTotalSync = new Object();
             grandTotalLabel.setText("0");
 
-            CounterThread thread1 = new CounterThread(progressBars[0], threadLabels[0], grandTotalLabel, 25,
+            threads[0] = new CounterThread(progressBars[0], threadLabels[0], grandTotalLabel, 25,
                     grandTotalSync, grandTotalCounter);
-            CounterThread thread2 = new CounterThread(progressBars[1], threadLabels[1], grandTotalLabel, 50,
+            threads[1] = new CounterThread(progressBars[1], threadLabels[1], grandTotalLabel, 50,
                     grandTotalSync, grandTotalCounter);
-            CounterThread thread3 = new CounterThread(progressBars[2], threadLabels[2], grandTotalLabel, 100,
+            threads[2] = new CounterThread(progressBars[2], threadLabels[2], grandTotalLabel, 100,
                     grandTotalSync, grandTotalCounter);
-            CounterThread thread4 = new CounterThread(progressBars[3], threadLabels[3], grandTotalLabel, 150,
+            threads[3] = new CounterThread(progressBars[3], threadLabels[3], grandTotalLabel, 150,
                     grandTotalSync, grandTotalCounter);
 
-            thread1.start();
-            thread2.start();
-            thread3.start();
-            thread4.start();
+            threads[0].start();
+            threads[1].start();
+            threads[2].start();
+            threads[3].start();
 
             CounterThread.startGrandTotalUpdater(grandTotalLabel, grandTotalSync, grandTotalCounter,
-                    () -> startButton.setEnabled(true), thread1, thread2, thread3, thread4);
+                    () -> startButton.setEnabled(true), threads[0], threads[1], threads[2], threads[3]);
 
             startButton.setEnabled(false);
         });
 
+        pauseButton.addActionListener(e -> {
+            for (CounterThread thread : threads) {
+                if (thread != null) {
+                    thread.pauseThread();
+                }
+            }
+        });
+
+        resumeButton.addActionListener(e -> {
+            for (CounterThread thread : threads) {
+                if (thread != null) {
+                    thread.resumeThread();
+                }
+            }
+        });
+
         buttonPanel.add(startButton);
+        buttonPanel.add(pauseButton);
+        buttonPanel.add(resumeButton);
 
         bottomPanel.add(buttonPanel, BorderLayout.WEST);
 
-        JPanel grandTotalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel grandTotalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         JLabel gtLabel = new JLabel("Grand Total:");
         gtLabel.setFont(new Font("Arial", Font.BOLD, 16));
         grandTotalPanel.add(gtLabel);

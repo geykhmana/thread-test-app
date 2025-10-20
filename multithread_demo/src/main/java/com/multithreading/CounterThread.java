@@ -11,6 +11,9 @@ public class CounterThread extends Thread {
     private AtomicInteger grandTotalCounter;
     private Object grandTotalSync;
 
+    private volatile boolean paused = false;
+    private final Object pauseLock = new Object();
+
     public CounterThread(JProgressBar progressBar, JLabel threadTotalLabel, JLabel grandTotalLabel, int interval,
             Object grandTotalSync,
             AtomicInteger grandTotalCounter) {
@@ -60,9 +63,31 @@ public class CounterThread extends Thread {
         return updater;
     }
 
+    public void pauseThread() {
+        paused = true;
+    }
+
+    public void resumeThread() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
+        }
+    }
+
     @Override
     public void run() {
         for (int i = 1; i <= 100; i++) {
+            synchronized (pauseLock) {
+                while (paused) {
+                    try {
+                        pauseLock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+            }
+
             final int currentValue = i;
 
             SwingUtilities.invokeLater(() -> {
