@@ -1,3 +1,7 @@
+/*****************************************************
+ * This class is for the App NOT using ExecutorService
+ *****************************************************/
+
 package com.multithreading;
 
 import java.util.concurrent.atomic.AtomicInteger;

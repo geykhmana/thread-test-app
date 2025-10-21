@@ -37,6 +37,12 @@ public class CounterTask implements Runnable {
     public void run() {
         try {
             for (int i = 1; i <= 100; i++) {
+                synchronized (pauseLock) {
+                    while (paused) {
+                        pauseLock.wait();
+                    }
+                }
+
                 final int currentValue = i;
 
                 SwingUtilities.invokeLater(() -> {

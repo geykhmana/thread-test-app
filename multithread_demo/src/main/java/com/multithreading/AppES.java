@@ -106,8 +106,14 @@ public class AppES extends JFrame {
                         synchronized (grandTotalSync) {
                             SwingUtilities.invokeAndWait(
                                     () -> grandTotalLabel.setText(String.valueOf(grandTotalCounter.get())));
+                            Thread.sleep(50);
                         }
                     }
+
+                    SwingUtilities.invokeLater(() -> {
+                        grandTotalLabel.setText(String.valueOf(grandTotalCounter.get()));
+                        startButton.setEnabled(true);
+                    });
                 } catch (Exception ex) { // e already used as the event above
                     ex.printStackTrace();
                 }
